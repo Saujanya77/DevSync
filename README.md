@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DevSync README</title>
+    
 </head>
 <body>
 
@@ -84,8 +84,6 @@ cd devsync
 </code></pre></li>
     <li>Install Dependencies:
         <pre><code>npm install</code></pre></li>
-    <li>Set Up Environment Variables:
-        <pre><code>.env
     <li>Run the Server:
         <pre><code>npm start</code></pre></li>
 </ol>
