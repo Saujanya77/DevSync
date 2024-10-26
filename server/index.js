@@ -108,7 +108,7 @@ app.post("/compile", async (req, res) => {
 
     res.json(response.data);
   } catch (error) {
-    console.error(error.response ? error.response.data : error.message);
+    console.error("Error occurred:", error);
     res.status(500).json({ error: "Failed to compile code" });
   }
 });
