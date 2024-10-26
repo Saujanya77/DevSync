@@ -95,6 +95,7 @@ io.on("connection", (socket) => {
 
 app.post("/compile", async (req, res) => {
   const { code, language } = req.body;
+  console.log(`Received request to compile code in ${language}:`, code);
 
   try {
     const response = await axios.post("https://api.jdoodle.com/v1/execute", {
@@ -107,10 +108,11 @@ app.post("/compile", async (req, res) => {
 
     res.json(response.data);
   } catch (error) {
-    console.error(error);
+    console.error(error.response ? error.response.data : error.message);
     res.status(500).json({ error: "Failed to compile code" });
   }
 });
 
+
 const PORT = process.env.PORT || 5000;
-server.listen(PORT, () => console.log(`Server is runnint on port ${PORT}`));
+server.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
