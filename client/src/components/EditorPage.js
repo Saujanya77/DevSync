@@ -7,6 +7,7 @@ import { useNavigate, useLocation, Navigate, useParams } from "react-router-dom"
 import { toast } from "react-hot-toast";
 import axios from "axios";
 
+
 // List of supported languages
 const LANGUAGES = [
   "python3",
@@ -28,6 +29,7 @@ const LANGUAGES = [
 ];
 
 function EditorPage() {
+  
   const [clients, setClients] = useState([]);
   const [output, setOutput] = useState("");
   const [isCompileWindowOpen, setIsCompileWindowOpen] = useState(false);
@@ -109,7 +111,7 @@ function EditorPage() {
   const runCode = async () => {
     setIsCompiling(true);
     try {
-      const response = await axios.post("http://localhost:5000/compile", {
+      const response = await axios.post("https://devsync-backend-zi43.onrender.com/compile", {
         code: codeRef.current,
         language: selectedLanguage,
       });
