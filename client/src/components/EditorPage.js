@@ -29,7 +29,7 @@ const LANGUAGES = [
 ];
 
 function EditorPage() {
-  
+
   const [clients, setClients] = useState([]);
   const [output, setOutput] = useState("");
   const [isCompileWindowOpen, setIsCompileWindowOpen] = useState(false);
@@ -80,6 +80,9 @@ function EditorPage() {
           return prev.filter((client) => client.socketId !== socketId);
         });
       });
+      socketRef.current.on(ACTIONS.LANGUAGE_CHANGE, (newLanguage) => {
+        setSelectedLanguage(newLanguage);
+      });
     };
     init();
 
@@ -87,12 +90,19 @@ function EditorPage() {
       socketRef.current && socketRef.current.disconnect();
       socketRef.current.off(ACTIONS.JOINED);
       socketRef.current.off(ACTIONS.DISCONNECTED);
+      socketRef.current.off(ACTIONS.LANGUAGE_CHANGE);
     };
   }, []);
 
   if (!location.state) {
     return <Navigate to="/" />;
   }
+
+  const handleLanguageChange = (e) => {
+    const newLanguage = e.target.value;
+    setSelectedLanguage(newLanguage);
+    socketRef.current.emit(ACTIONS.LANGUAGE_CHANGE, newLanguage);
+  };
 
   const copyRoomId = async () => {
     try {
@@ -120,6 +130,7 @@ function EditorPage() {
     } catch (error) {
       console.error("Error compiling code:", error);
       setOutput(error.response?.data?.error || "An error occurred");
+      toast.error("Compilation failed!");
     } finally {
       setIsCompiling(false);
     }
@@ -152,9 +163,9 @@ function EditorPage() {
             src="/images/devsync.png"
             alt="Logo"
             className="img-fluid mx-auto"
-            style={{ maxWidth: "150px", marginTop: "1rem",  filter: "drop-shadow(0 0 10px #00ffff)" }}
+            style={{ maxWidth: "150px", marginTop: "1rem", filter: "drop-shadow(0 0 10px #00ffff)" }}
           />
-          <hr style={{ marginTop: "1.2rem" ,color:"white" }} />
+          <hr style={{ marginTop: "1.2rem", color: "white" }} />
 
           <div className="d-flex flex-column flex-grow-1 overflow-auto">
             <span className="mb-2 mt-1 text-white">Members</span>
@@ -166,16 +177,17 @@ function EditorPage() {
           <hr />
           <div className="mt-auto mb-3">
             <button className="btn btn-success w-100 mb-2" onClick={copyRoomId} style={{
-                  background: "linear-gradient(135deg, #32CD32, #006400)",    
-                  color: "white",
-                  border: "none",
-                }}>
+              background: "linear-gradient(135deg, #32CD32, #006400)",
+              color: "white",
+              border: "none",
+            }}>
               Copy Room ID
             </button>
             <button className="btn btn-danger w-100" onClick={leaveRoom} style={{
-                  background: "linear-gradient(135deg, rgba(255, 102, 102, 1), rgba(139, 0, 0, 1))", // Red gradient button
-                  color: "white",
-                  border: "none"}} >
+              background: "linear-gradient(135deg, rgba(255, 102, 102, 1), rgba(139, 0, 0, 1))", // Red gradient button
+              color: "white",
+              border: "none"
+            }} >
               Leave Room
             </button>
           </div>
@@ -189,9 +201,9 @@ function EditorPage() {
             <select
               className="form-select w-auto"
               value={selectedLanguage}
-              onChange={(e) => setSelectedLanguage(e.target.value)}
+              onChange={handleLanguageChange}
               style={{
-                backgroundColor: "rgba(0, 0, 0, 0.5)",
+                backgroundColor: "black",
                 color: "#00ffff",
                 border: "none",
                 padding: "10px",
@@ -226,9 +238,8 @@ function EditorPage() {
       </button>
 
       <div
-        className={`bg-dark text-light p-3 ${
-          isCompileWindowOpen ? "d-block" : "d-none"
-        }`}
+        className={`bg-dark text-light p-3 ${isCompileWindowOpen ? "d-block" : "d-none"
+          }`}
         style={{
           position: "fixed",
           bottom: 0,
@@ -248,7 +259,7 @@ function EditorPage() {
               onClick={runCode}
               disabled={isCompiling}
               style={{
-                background: "linear-gradient(135deg, #32CD32, #006400)",  
+                background: "linear-gradient(135deg, #32CD32, #006400)",
                 color: "white",
                 border: "none",
               }}
@@ -256,19 +267,19 @@ function EditorPage() {
               {isCompiling ? "Compiling..." : "Run Code"}
             </button>
             <button className="btn btn-secondary" onClick={toggleCompileWindow} style={{
-                background: "background: linear-gradient(135deg, rgba(200, 200, 200, 1), rgba(100, 100, 100, 1), rgba(255, 0, 0, 0.2))",   
-                color: "white",
-                border: "none",
-              }}>
+              background: "background: linear-gradient(135deg, rgba(200, 200, 200, 1), rgba(100, 100, 100, 1), rgba(255, 0, 0, 0.2))",
+              color: "white",
+              border: "none",
+            }}>
               Close
             </button>
           </div>
         </div>
         <pre className="bg-secondary p-3 rounded" style={{
-                background: "background: linear-gradient(135deg, rgba(200, 200, 200, 1), rgba(100, 100, 100, 1), rgba(255, 0, 0, 0.2))",   
-                color: "white",
-                border: "none",
-              }}>
+          background: "background: linear-gradient(135deg, rgba(200, 200, 200, 1), rgba(100, 100, 100, 1), rgba(255, 0, 0, 0.2))",
+          color: "white",
+          border: "none",
+        }}>
           {output || "Output will appear here after compilation"}
         </pre>
       </div>
