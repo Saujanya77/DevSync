@@ -80,9 +80,11 @@ function EditorPage() {
           return prev.filter((client) => client.socketId !== socketId);
         });
       });
-      socketRef.current.on(ACTIONS.LANGUAGE_CHANGE, (newLanguage) => {
-        setSelectedLanguage(newLanguage);
-      });
+      socketRef.current.on(ACTIONS.LANGUAGE_CHANGE, ({ language }) => {
+        console.log(`Received LANGUAGE_CHANGE: ${language}`);
+        setSelectedLanguage(language);
+    });
+    
     };
     init();
 
@@ -101,8 +103,10 @@ function EditorPage() {
   const handleLanguageChange = (e) => {
     const newLanguage = e.target.value;
     setSelectedLanguage(newLanguage);
-    socketRef.current.emit(ACTIONS.LANGUAGE_CHANGE, newLanguage);
-  };
+    socketRef.current.emit(ACTIONS.LANGUAGE_CHANGE, { roomId, language: newLanguage });
+    console.log(`Emitting LANGUAGE_CHANGE: ${newLanguage} to room ${roomId}`);
+
+};
 
   const copyRoomId = async () => {
     try {
