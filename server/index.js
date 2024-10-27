@@ -72,28 +72,30 @@ io.on("connection", (socket) => {
   socket.on(ACTIONS.CODE_CHANGE, ({ roomId, code }) => {
     socket.in(roomId).emit(ACTIONS.CODE_CHANGE, { code });
   });
+
   // when new user join the room all the code which are there are also shows on that persons editor
   socket.on(ACTIONS.SYNC_CODE, ({ socketId, code }) => {
     io.to(socketId).emit(ACTIONS.CODE_CHANGE, { code });
   });
+
   // Listen for language change events
   socket.on(ACTIONS.LANGUAGE_CHANGE, ({ roomId, language }) => {
     socket.in(roomId).emit(ACTIONS.LANGUAGE_CHANGE, { language });
+  });
 
-  // leave room
+  // Handle user disconnection
   socket.on("disconnecting", () => {
     const rooms = [...socket.rooms];
-    // leave all the room
+    // Leave all rooms
     rooms.forEach((roomId) => {
       socket.in(roomId).emit(ACTIONS.DISCONNECTED, {
         socketId: socket.id,
-        username: userSocketMap[socket.id],
+        username: userSocketMap[socket.id] || "Unknown User", // Default username
       });
     });
-  });
 
     delete userSocketMap[socket.id];
-    socket.leave();
+    socket.leave(); // Leave the room after notifying
   });
 });
 
@@ -117,7 +119,5 @@ app.post("/compile", async (req, res) => {
   }
 });
 
-
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
-
