@@ -35,7 +35,7 @@ app.use(express.json());
 
 const io = new Server(server, {
   cors: {
-    origin: "*",
+    origin: "https://devsync-frontend-peh8.onrender.com",
     methods: ["GET", "POST"],
   },
 });
