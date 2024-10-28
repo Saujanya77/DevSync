@@ -33,6 +33,10 @@ app.use(cors());
 // Parse JSON bodies
 app.use(express.json());
 
+app.get('/ping', (req, res) => {
+  res.status(200).send('Server is up');
+});
+
 const io = new Server(server, {
   cors: {
     origin: "https://devsync-frontend-peh8.onrender.com",
